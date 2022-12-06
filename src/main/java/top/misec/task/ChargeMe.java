@@ -18,7 +18,7 @@ import static top.misec.task.TaskInfoHolder.*;
 /**
  * 给自己充电
  * <p/>
- * 月底自动给自己充电。仅充会到期的B币券，低于2的时候不会充
+ * 月初自动给自己充电。仅充会到期的B币券，低于2的时候不会充
  *
  * @author @JunzhouLiu @Kurenai
  * @since 2020-11-22 5:43
@@ -26,7 +26,7 @@ import static top.misec.task.TaskInfoHolder.*;
 @Log4j2
 public class ChargeMe implements Task {
 
-    private final String taskName = "大会员月底B币券充电和月初大会员权益领取";
+    private final String taskName = "大会员月初B币券充电和月初大会员权益领取";
 
     @Override
     public void run() {
@@ -47,7 +47,7 @@ public class ChargeMe implements Task {
         }
 
         if (!Config.getInstance().isMonthEndAutoCharge()) {
-            log.info("未开启月底给自己充电功能");
+            log.info("未开启月初给自己充电功能");
             return;
         }
 
@@ -72,9 +72,9 @@ public class ChargeMe implements Task {
         }
 
         /*
-          判断条件 是月底&&是年大会员&&b币券余额大于2&&配置项允许自动充电
+          判断条件 是月初&&是年大会员&&b币券余额大于2&&配置项允许自动充电
          */
-        if (day >= 28 && couponBalance >= 2 &&
+        if (day >= 1 && couponBalance >= 2 &&
                 Config.getInstance().isMonthEndAutoCharge()) {
             String requestBody = "bp_num=" + couponBalance
                     + "&is_bp_remains_prior=true"
@@ -90,7 +90,7 @@ public class ChargeMe implements Task {
                 JsonObject dataJson = jsonObject.get("data").getAsJsonObject();
                 int statusCode = dataJson.get("status").getAsInt();
                 if (statusCode == 4) {
-                    log.info("月底了，给自己充电成功啦，送的B币券没有浪费哦");
+                    log.info("月初了，给自己充电成功啦，送的B币券没有浪费哦");
                     log.info("本次充值使用了: " + couponBalance + "个B币券");
                     //获取充电留言token
                     String orderNo = dataJson.get("order_no").getAsString();
